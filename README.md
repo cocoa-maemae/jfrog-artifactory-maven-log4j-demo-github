@@ -1,4 +1,4 @@
-JFrog ArtifactoryとGitHub Actionsを連携したMavenプロジェクトのデモです。
+JFrog ArtifactoryとGitHub Actionsを連携したMavenプロジェクトのデモ
 
 脆弱性のあるlog4jライブラリを利用している
 
@@ -49,7 +49,7 @@ mvn clean deploy
 
 このプロジェクトはGitHub Actions、JFrog CLIを使用してCIを実行します：
 
-- **トリガー**: `main`と`dev`ブランチへのプッシュ/プルリクエスト
+- **トリガー**: `main`ブランチへのプッシュ/プルリクエスト
 - **実行内容**:
   - Java 21以上でのビルド
   - テストの実行

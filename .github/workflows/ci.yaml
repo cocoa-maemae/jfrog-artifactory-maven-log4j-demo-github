@@ -2,7 +2,7 @@ name: tomokim-maven-log4j-demo-github
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
