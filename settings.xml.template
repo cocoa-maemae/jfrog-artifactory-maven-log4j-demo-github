@@ -1,0 +1,18 @@
+<settings>
+  <servers>
+    <server>
+      <id>artifactory</id>
+      <username>your id</username>
+      <password>your api token</password>
+    </server>
+  </servers>
+
+  <mirrors>
+    <mirror>
+      <id>artifactory</id>
+      <name>Artifactory</name>
+      <url>Your virtual repository URL E.g.https://soleng.jfrog.io/artifactory/your virtual repository</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>

@@ -1,0 +1,108 @@
+name: tomokim-maven-log4j-demo-github
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+# OIDC settings
+permissions:
+  # This is required for requesting the OIDC token
+  id-token: write
+  # This is required for actions/checkout
+  contents: read
+
+env:
+  BUILD_NAME: "tomokim-maven-log4j-demo-github"
+  #VIRTUAL_REPO: "td-backend-maven-dev-virtual"
+  VIRTUAL_REPO: "tv-backend-maven-test-virtual"
+  #LOCAL_REPO: "td-backend-maven-dev-local"
+  LOCAL_REPO: "tv-backend-maven-test-local"
+
+jobs:
+  test_build_publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        # JFrog platform url (for example: https://acme.jfrog.io)
+        JF_URL: https://soleng.jfrog.io 
+      with:
+        # Name of the OIDC provider as specified on the OIDC integration page in the JFrog Platform
+        oidc-provider-name: tomokim-github-actions-integration 
+        oidc-audience: tomokim-github-actions-integration
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        
+    #- name: Cache Maven dependencies
+    #  uses: actions/cache@v4
+    #  with:
+    #    path: ~/.m2
+    #    key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+    #    restore-keys: ${{ runner.os }}-m2
+  
+    - name: Set environment variables based on branch
+      run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "REPO_ENV=prod" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "REPO_ENV=dev" >> $GITHUB_ENV
+          else
+            echo "REPO_ENV=dev" >> $GITHUB_ENV
+          fi
+          echo "Repository environment: $REPO_ENV"
+
+    - name: Configure Maven
+      run: |
+        # Create minimal settings.xml to avoid security issues
+        mkdir -p ~/.m2
+        cat > ~/.m2/settings.xml << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <settings>
+          <servers>
+            <server>
+              <id>soleng.jfrog.io</id>
+              <username>github-actions</username>
+              <password>dummy</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+       
+    - name: Check JFrog connectivity
+      run: |
+        # Ping the server
+        jf rt ping
+
+    - name: Run tests and build project
+      run: |
+        # Configure Maven to use Artifactory virtual repository based on branch
+        jf mvnc \
+          --repo-resolve-snapshots ${{ env.VIRTUAL_REPO }} \
+          --repo-resolve-releases ${{ env.VIRTUAL_REPO }} \
+          --repo-deploy-snapshots ${{ env.LOCAL_REPO }} \
+          --repo-deploy-releases ${{ env.LOCAL_REPO }}
+        # test and build
+        jf mvn clean install --build-name=$BUILD_NAME --build-number=$GITHUB_RUN_NUMBER
+
+    - name: Upload to Artifactory
+      run: |
+        # Upload JAR files to Artifactory local repository based on environment. Here specifies a virtual respoitory.
+        jf rt upload "target/*.jar" "${{ env.VIRTUAL_REPO }}"
+
+        # Collect environment variables and add them to build (bce | build-collect-env)bad
+        jf rt bce $BUILD_NAME $GITHUB_RUN_NUMBER 
+        # Collect VCS details from .git and add them to the build (bag | build-add-git)
+        jf rt bag $BUILD_NAME $GITHUB_RUN_NUMBER
+        # Publish build info (bp | build-publish)
+        jf rt bp $BUILD_NAME $GITHUB_RUN_NUMBER
