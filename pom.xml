@@ -7,9 +7,9 @@
   <groupId>com.example</groupId>
   <artifactId>maven-log4j-demo</artifactId>
   <version>1.0.6-SNAPSHOT</version>
-  <name>maven-log4j-dem</name>
+  <name>maven-log4j-demo</name>
   <description>Simple Maven package sample</description>
-  <url>https://example.com/maven-log4j-dem</url>
+  <url>https://example.com/maven-log4j-demo</url>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
