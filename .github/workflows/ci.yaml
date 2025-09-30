@@ -95,7 +95,7 @@ jobs:
         # test and build
         jf mvn clean install --build-name=$BUILD_NAME --build-number=$GITHUB_RUN_NUMBER
 
-    - name: Upload to Artifactory
+    - name: Upload to Artifactory and run Xray
       run: |
         # Upload JAR files to Artifactory local repository based on environment. Here specifies a virtual respoitory.
         jf rt upload "target/*.jar" "${{ env.VIRTUAL_REPO }}"
@@ -106,3 +106,6 @@ jobs:
         jf rt bag $BUILD_NAME $GITHUB_RUN_NUMBER
         # Publish build info (bp | build-publish)
         jf rt bp $BUILD_NAME $GITHUB_RUN_NUMBER
+        
+        # run xray
+        jf bs $BUILD_NAME $GITHUB_RUN_NUMBER --fail=true
