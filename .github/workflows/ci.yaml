@@ -106,3 +106,6 @@ jobs:
         jf rt bag $BUILD_NAME $GITHUB_RUN_NUMBER
         # Publish build info (bp | build-publish)
         jf rt bp $BUILD_NAME $GITHUB_RUN_NUMBER
+        
+        # run xray
+        jf bs $BUILD_NAME $GITHUB_RUN_NUMBER
