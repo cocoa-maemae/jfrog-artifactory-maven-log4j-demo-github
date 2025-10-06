@@ -15,10 +15,10 @@ permissions:
 
 env:
   BUILD_NAME: "tomokim-maven-log4j-demo-github"
-  #VIRTUAL_REPO: "td-backend-maven-dev-virtual"
-  VIRTUAL_REPO: "tv-backend-maven-test-virtual"
-  #LOCAL_REPO: "td-backend-maven-dev-local"
-  LOCAL_REPO: "tv-backend-maven-test-local"
+  VIRTUAL_REPO: "td-backend-maven-dev-virtual"
+  #VIRTUAL_REPO: "tv-backend-maven-test-virtual"
+  LOCAL_REPO: "td-backend-maven-dev-local"
+  #LOCAL_REPO: "tv-backend-maven-test-local"
 
 jobs:
   test_build_publish:
